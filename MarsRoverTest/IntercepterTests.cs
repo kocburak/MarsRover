@@ -6,26 +6,22 @@ namespace MarsRoverTest
 {
     public class IntercepterTests
     {
-        [Fact]
-        public void Intercepter_InterpretMapLimits()
+        [Theory, InlineData("5 5",5,5), InlineData("3 4",3,4)]
+        public void Intercepter_InterpretMapLimits(string input, int mapSizeX, int mapSizeY)
         {
             Rover rover = new Rover();
             Interpreter interpreter = new Interpreter(rover);
 
-            interpreter.InterpretMapLimits("5 5");
+            interpreter.InterpretMapLimits(input);
 
-            Assert.Equal(5, rover.MapSizeX);
-            Assert.Equal(5, rover.MapSizeY);
-
-
-            interpreter.InterpretMapLimits("3 4");
-
-            Assert.Equal(3, rover.MapSizeX);
-            Assert.Equal(4, rover.MapSizeY);
+            Assert.Equal(mapSizeX, rover.MapSizeX);
+            Assert.Equal(mapSizeY, rover.MapSizeY);
         }
 
-        [Fact]
-        public void Intercepter_InterpretRoverPosition_12E()
+        [Theory,
+            InlineData("1 2 E", 1, 2, DirectionEnum.E),
+            InlineData("3 3 W", 3, 3, DirectionEnum.W)]
+        public void Intercepter_InterpretRoverPosition(string input, int positionX, int positionY, DirectionEnum direction)
         {
             Rover rover = new Rover()
             {
@@ -34,32 +30,24 @@ namespace MarsRoverTest
             };
             Interpreter interpreter = new Interpreter(rover);
 
-            interpreter.InterpretPosition("1 2 E");
+            interpreter.InterpretPosition(input);
 
-            Assert.Equal(1, rover.PositionX);
-            Assert.Equal(2, rover.PositionY);
-            Assert.Equal(DirectionEnum.E, rover.CurrentDirection);
-
-
-            interpreter.InterpretPosition("3 3 W");
-
-            Assert.Equal(3, rover.PositionX);
-            Assert.Equal(3, rover.PositionY);
-            Assert.Equal(DirectionEnum.W, rover.CurrentDirection);
+            Assert.Equal(positionX, rover.PositionX);
+            Assert.Equal(positionY, rover.PositionY);
+            Assert.Equal(direction, rover.CurrentDirection);
         }
 
-        [Fact]
-        public void Intercepter_InterpretMapLimits_WithInvalidInputs()
+        [Theory, InlineData("4 4 2"), InlineData("3 E")]
+        public void Intercepter_InterpretMapLimits_WithInvalidInputs(string input)
         {
             Rover rover = new Rover();
             Interpreter interpreter = new Interpreter(rover);
 
-            Assert.Throws<ArgumentException>(() => interpreter.InterpretMapLimits("4 4 2"));
-            Assert.Throws<ArgumentException>(() => interpreter.InterpretMapLimits("3 E"));
+            Assert.Throws<ArgumentException>(() => interpreter.InterpretMapLimits(input));
         }
 
-        [Fact]
-        public void Intercepter_InterpretRoverPosition_WithInvalidDirection()
+        [Theory, InlineData("1 2 X"), InlineData("4 4 2"), InlineData("3 E")]
+        public void Intercepter_InterpretRoverPosition_WithInvalidDirection(string input)
         {
             Rover rover = new Rover()
             {
@@ -68,11 +56,14 @@ namespace MarsRoverTest
             };
             Interpreter interpreter = new Interpreter(rover);
 
-            Assert.Throws<ArgumentException>(() => interpreter.InterpretPosition("1 2 X"));
+            Assert.Throws<ArgumentException>(() => interpreter.InterpretPosition(input));
         }
 
-        [Fact]
-        public void Intercepter_InterpretCommands_12N_LMLMLMLMM_13N()
+        [Theory,
+            InlineData("LMLMLMLMM", 1, 3, DirectionEnum.N),
+            InlineData("MMRMMRMRRM", 3, 4, DirectionEnum.N)
+            ]
+        public void Intercepter_InterpretCommands(string input, int positionX, int positionY, DirectionEnum direction)
         {
             Rover rover = new Rover()
             {
@@ -84,15 +75,15 @@ namespace MarsRoverTest
             };
             Interpreter interpreter = new Interpreter(rover);
 
-            interpreter.InterpretCommands("LMLMLMLMM");
+            interpreter.InterpretCommands(input);
 
-            Assert.Equal(1, rover.PositionX);
-            Assert.Equal(3, rover.PositionY);
-            Assert.Equal(DirectionEnum.N, rover.CurrentDirection);
+            Assert.Equal(positionX, rover.PositionX);
+            Assert.Equal(positionY, rover.PositionY);
+            Assert.Equal(direction, rover.CurrentDirection);
         }
 
-        [Fact]
-        public void Intercepter_InterpretCommands_33N_MMRMMRMRRM_51E()
+        [Theory, InlineData("MMMMM"), InlineData("RMMMMM")]
+        public void Intercepter_InterpretCommands_WithOutOfMap_ThrowsArgumentException(string input)
         {
             Rover rover = new Rover()
             {
@@ -105,45 +96,7 @@ namespace MarsRoverTest
 
             Interpreter interpreter = new Interpreter(rover);
 
-            interpreter.InterpretCommands("MMRMMRMRRM");
-
-            Assert.Equal(5, rover.PositionX);
-            Assert.Equal(1, rover.PositionY);
-            Assert.Equal(DirectionEnum.E, rover.CurrentDirection);
-        }
-
-        [Fact]
-        public void Intercepter_InterpretCommands_WithOutOfMap_33E_MMMMM_ThrowsArgumentException()
-        {
-            Rover rover = new Rover()
-            {
-                CurrentDirection = DirectionEnum.E,
-                PositionX = 3,
-                PositionY = 3,
-                MapSizeX = 5,
-                MapSizeY = 5
-            };
-
-            Interpreter interpreter = new Interpreter(rover);
-
-            Assert.Throws<InvalidOperationException>(() => interpreter.InterpretCommands("MMMMM"));
-        }
-
-        [Fact]
-        public void Intercepter_InterpretCommands_WithOutOfMap_33E_RMMMMM_ThrowsArgumentException()
-        {
-            Rover rover = new Rover()
-            {
-                CurrentDirection = DirectionEnum.E,
-                PositionX = 3,
-                PositionY = 3,
-                MapSizeX = 5,
-                MapSizeY = 5
-            };
-
-            Interpreter interpreter = new Interpreter(rover);
-
-            Assert.Throws<InvalidOperationException>(() => interpreter.InterpretCommands("RMMMMM"));
+            Assert.Throws<InvalidOperationException>(() => interpreter.InterpretCommands(input));
         }
 
         [Fact]

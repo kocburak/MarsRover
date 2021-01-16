@@ -21,7 +21,7 @@ namespace MarsRover
                 throw new ArgumentException("Position is expected as 2 integer and Direction charater (N,E,S,W) with a space between them. Input :" + positions);
             }
 
-            if (int.TryParse((string)splittedPosition[0], out int positionX))
+            if (int.TryParse(splittedPosition[0], out int positionX))
             {
 
                 MarsRover.PositionX = positionX;
@@ -31,7 +31,7 @@ namespace MarsRover
                 throw new ArgumentException("Position is expected as 2 integer and Direction charater (N,E,S,W) with a space between them. Input :" + positions);
             }
 
-            if (int.TryParse((string)splittedPosition[1], out int positionY))
+            if (int.TryParse(splittedPosition[1], out int positionY))
             {
 
                 MarsRover.PositionY = positionY;
@@ -41,9 +41,10 @@ namespace MarsRover
                 throw new ArgumentException("Position is expected as 2 integer and Direction charater (N,E,S,W) with a space between them. Input :" + positions);
             }
 
-            if (Enum.TryParse(splittedPosition[2], out DirectionEnum direction))
-            {
+            var isNumber = int.TryParse(splittedPosition[2], out int _);
 
+            if (!isNumber && Enum.TryParse(splittedPosition[2], out DirectionEnum direction))
+            {
                 MarsRover.CurrentDirection = direction;
             }
             else
