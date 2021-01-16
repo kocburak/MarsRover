@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace MarsRover
@@ -22,41 +23,40 @@ namespace MarsRover
 
         }
 
+        private static void InstructionsFromFile(string[] args, Rover marsRover, Interpreter interpreter)
+        {
+            string[] lines = File.ReadAllLines(args[0]);
+            InterpretLines(lines, marsRover, interpreter);
+        }
+
         private static void InstructionsFromConsole(Rover marsRover, Interpreter interpreter)
         {
-            var mapLimits = Console.ReadLine();
-            interpreter.InterpretMapLimits(mapLimits);
+            var lines = new List<string>();
 
             while (true)
             {
 
-                var roverPosition = Console.ReadLine();
+                var input = Console.ReadLine();
 
-                if (roverPosition == "")
+                if (input == "")
                 {
                     break;
                 }
+                lines.Add(input);
 
-                interpreter.InterpretPosition(roverPosition);
-
-                var commandInput = Console.ReadLine();
-                interpreter.InterpretCommands(commandInput);
-
-                Console.WriteLine($"{marsRover.PositionX} {marsRover.PositionY} {marsRover.CurrentDirection}");
             }
+            InterpretLines(lines.ToArray(), marsRover, interpreter);
         }
 
-        private static void InstructionsFromFile(string[] args, Rover marsRover, Interpreter interpreter)
+        private static void InterpretLines(string[] lines, Rover marsRover, Interpreter interpreter)
         {
-            string[] lines = File.ReadAllLines(args[0]);
-
             if (lines.Length < 3)
             {
-                throw new ArgumentException("File should contains at least 3 valid lines");
+                throw new ArgumentException("Input should contains at least 3 valid lines");
             }
             else if (lines.Length % 2 != 1)
             {
-                throw new ArgumentException("File should contains odd number of lines");
+                throw new ArgumentException("Input should contains odd number of lines");
             }
 
             interpreter.InterpretMapLimits(lines[0]);
@@ -68,6 +68,8 @@ namespace MarsRover
                 Console.WriteLine($"{marsRover.PositionX} {marsRover.PositionY} {marsRover.CurrentDirection}");
             }
         }
+
+
     }
 
 }
