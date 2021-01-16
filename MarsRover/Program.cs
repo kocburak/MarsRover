@@ -12,24 +12,28 @@ namespace MarsRover
 
             Interpreter interpreter = new Interpreter(marsRover);
 
+            string[] output;
+
             if (args.Length >= 1)
             {
-                InstructionsFromFile(args, marsRover, interpreter);
+                output = InstructionsFromFile(args, marsRover, interpreter);
             }
             else
             {
-                InstructionsFromConsole(marsRover, interpreter);
+                output = InstructionsFromConsole(marsRover, interpreter);
             }
 
+            PrintOutput(output);
+
         }
 
-        private static void InstructionsFromFile(string[] args, Rover marsRover, Interpreter interpreter)
+        private static string[] InstructionsFromFile(string[] args, Rover marsRover, Interpreter interpreter)
         {
             string[] lines = File.ReadAllLines(args[0]);
-            InterpretLines(lines, marsRover, interpreter);
+            return interpreter.InterpretLines(lines);
         }
 
-        private static void InstructionsFromConsole(Rover marsRover, Interpreter interpreter)
+        private static string[] InstructionsFromConsole(Rover marsRover, Interpreter interpreter)
         {
             var lines = new List<string>();
 
@@ -38,35 +42,19 @@ namespace MarsRover
 
                 var input = Console.ReadLine();
 
-                if (input == "")
-                {
+                if (string.IsNullOrWhiteSpace(input))
                     break;
-                }
+
                 lines.Add(input);
 
             }
-            InterpretLines(lines.ToArray(), marsRover, interpreter);
+            return interpreter.InterpretLines(lines.ToArray());
         }
 
-        private static void InterpretLines(string[] lines, Rover marsRover, Interpreter interpreter)
+        private static void PrintOutput(string[] output)
         {
-            if (lines.Length < 3)
-            {
-                throw new ArgumentException("Input should contains at least 3 valid lines");
-            }
-            else if (lines.Length % 2 != 1)
-            {
-                throw new ArgumentException("Input should contains odd number of lines");
-            }
-
-            interpreter.InterpretMapLimits(lines[0]);
-
-            for (int i = 1; i < lines.Length; i += 2)
-            {
-                interpreter.InterpretPosition(lines[i]);
-                interpreter.InterpretCommands(lines[i + 1]);
-                Console.WriteLine($"{marsRover.PositionX} {marsRover.PositionY} {marsRover.CurrentDirection}");
-            }
+            foreach(string line in output)
+                Console.WriteLine(line); 
         }
 
 

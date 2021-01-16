@@ -58,8 +58,6 @@ namespace MarsRoverTest
             Assert.Throws<ArgumentException>(() => interpreter.InterpretMapLimits("3 E"));
         }
 
-
-
         [Fact]
         public void Intercepter_InterpretRoverPosition_WithInvalidDirection()
         {
@@ -72,7 +70,6 @@ namespace MarsRoverTest
 
             Assert.Throws<ArgumentException>(() => interpreter.InterpretPosition("1 2 X"));
         }
-
 
         [Fact]
         public void Intercepter_InterpretCommands_12N_LMLMLMLMM_13N()
@@ -93,7 +90,6 @@ namespace MarsRoverTest
             Assert.Equal(3, rover.PositionY);
             Assert.Equal(DirectionEnum.N, rover.CurrentDirection);
         }
-
 
         [Fact]
         public void Intercepter_InterpretCommands_33N_MMRMMRMRRM_51E()
@@ -133,7 +129,6 @@ namespace MarsRoverTest
             Assert.Throws<InvalidOperationException>(() => interpreter.InterpretCommands("MMMMM"));
         }
 
-
         [Fact]
         public void Intercepter_InterpretCommands_WithOutOfMap_33E_RMMMMM_ThrowsArgumentException()
         {
@@ -167,5 +162,91 @@ namespace MarsRoverTest
 
             Assert.Throws<ArgumentException>(() => interpreter.InterpretCommands("RMMX"));
         }
+
+        [Fact]
+        public void Intercepter_InterpretLines()
+        {
+            Rover rover = new Rover();
+
+            Interpreter interpreter = new Interpreter(rover);
+
+
+            var input = new string[]
+            {
+                "5 5",
+                "1 2 N",
+                "LMLMLMLMM",
+                "3 3 E",
+                "MMRMMRMRRM"
+            };
+
+            var expectedOutput = new string[]
+            {
+                "1 3 N",
+                "5 1 E"
+            };
+
+            var actualOutput = interpreter.InterpretLines(input);
+
+            Assert.Equal(expectedOutput, actualOutput);
+        }
+
+        [Fact]
+        public void Intercepter_InterpretLines_WithInvalidMapSizeFormatInput_ThrowsArgumentException()
+        {
+            Rover rover = new Rover();
+
+            Interpreter interpreter = new Interpreter(rover);
+
+
+            var input = new string[]
+            {
+                "5 5 X",
+                "1 2 N",
+                "LMLMLMLMM",
+                "3 3 E",
+                "MMRMMRMRRM"
+            };
+            Assert.Throws<ArgumentException>(() => interpreter.InterpretLines(input));
+        }
+
+        [Fact]
+        public void Intercepter_InterpretLines_WithInvalidRoverPositionInput_ThrowsArgumentException()
+        {
+            Rover rover = new Rover();
+
+            Interpreter interpreter = new Interpreter(rover);
+
+
+            var input = new string[]
+            {
+                "5 5",
+                "1 S 2",
+                "LMLMLMLMM",
+                "3 3 E",
+                "MMRMMRMRRM"
+            };
+            Assert.Throws<ArgumentException>(() => interpreter.InterpretLines(input));
+        }
+
+        [Fact]
+        public void Intercepter_InterpretLines_WithMissingInput_ThrowsArgumentException()
+        {
+            Rover rover = new Rover();
+
+            Interpreter interpreter = new Interpreter(rover);
+
+
+            var input = new string[]
+            {
+                "5 5",
+                "1 2 N",
+                "LMLMLMLMM",
+                "MMRMMRMRRM"
+            };
+            Assert.Throws<ArgumentException>(() => interpreter.InterpretLines(input));
+        }
+
+
     }
 }

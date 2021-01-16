@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MarsRover
 {
@@ -102,6 +103,31 @@ namespace MarsRover
                     throw new ArgumentException("Invalid move. Valid moves are L,R,M. Input: " + command);
                 }
             }
+        }
+
+        public string[] InterpretLines(string[] lines)
+        {
+            var output = new List<string>();
+
+            if (lines.Length < 3)
+            {
+                throw new ArgumentException("Input should contains at least 3 valid lines");
+            }
+            else if (lines.Length % 2 != 1)
+            {
+                throw new ArgumentException("Input should contains odd number of lines");
+            }
+
+            InterpretMapLimits(lines[0]);
+
+            for (int i = 1; i < lines.Length; i += 2)
+            {
+                InterpretPosition(lines[i]);
+                InterpretCommands(lines[i + 1]);
+                output.Add($"{MarsRover.PositionX} {MarsRover.PositionY} {MarsRover.CurrentDirection}");
+            }
+
+            return output.ToArray();
         }
 
     }
